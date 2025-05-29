@@ -3,7 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useId } from "react";
 import { useDispatch } from "react-redux";
 import * as Yup from 'yup';
-import { addContact } from "../../redux/contactsSlice"; 
+import { addContact } from "../../redux/contactsOps"; 
 
 export default function ContactForm() {
   const dispatch = useDispatch();
@@ -22,15 +22,18 @@ export default function ContactForm() {
       .required("Required"),
   });
 
-  const handleSubmit = (values, actions) => {
+  const handleSubmit = async (values, actions) => {
     const newContact = {
-      id: Date.now().toString(), 
       name: values.contactName,
       number: values.contactPhone,
     };
-
-    dispatch(addContact(newContact)); 
-    actions.resetForm(); 
+  
+    try {
+      await dispatch(addContact(newContact)); 
+      actions.resetForm(); 
+    } catch (error) {
+      console.error("Помилка при додаванні контакту:", error);
+    }
   };
 
   return (
